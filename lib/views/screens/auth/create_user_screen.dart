@@ -3,13 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:notes_app_with_getx/core/l10n/app_localizations.dart';
-import 'package:notes_app_with_getx/controllers/ui_state_provider.dart';
+import 'package:notes_app_with_getx/controllers/ui_state_controller.dart';
+import 'package:notes_app_with_getx/core/app_routes.dart';
 import 'package:notes_app_with_getx/views/widget/build_text_field.dart';
-// import 'package:notes_app_with_getx/providers/managment_some_state.dart';
 import 'package:notes_app_with_getx/views/widget/helper_methods.dart';
-import 'package:provider/provider.dart';
-import '../../../controllers/auth_provider.dart' show AuthController;
+import '../../../controllers/auth_controller.dart' show AuthController;
 import '../../../controllers/language_controller.dart';
 
 class CreateUserScreen extends StatefulWidget {
@@ -28,7 +26,6 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
-    final tr = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final languageController = Get.find<LanguageController>();
 
@@ -44,7 +41,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
-                tr!.createAcountTitle,
+                'createAcountTitle'.tr,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -84,8 +81,15 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                 children: [
                   const SizedBox(height: 20),
                   BuildTextField(
+                    controller: fullNameController,
+                    label: 'fullName'.tr,
+                    icon: Icons.person,
+                    theme: theme,
+                  ),
+                  const SizedBox(height: 20),
+                  BuildTextField(
                     controller: emailController,
-                    label: tr.emailLabel,
+                    label: 'emailLabel'.tr,
                     icon: Icons.email,
                     theme: theme,
                     isObscured: false,
@@ -93,58 +97,59 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
 
                   const SizedBox(height: 15),
                   //Password Text Field:
-                  Selector<UIStateProvider, bool>(
-                    selector: (context, isScuredPass) =>
-                        isScuredPass.currentVisibility(),
-                    builder: (context, isObscured, child) => BuildTextField(
+                  Obx(
+                    () => BuildTextField(
                       controller: passwordController,
-                      label: tr.passwordLabel,
+                      label: 'passwordLabel'.tr,
                       isPassword: true,
-                      icon: isObscured
+                      icon: Get.find<UIStateController>().isObscured
                           ? Icons.visibility_off
                           : Icons.visibility,
                       theme: theme,
-                      isObscured: isObscured,
+                      isObscured: Get.find<UIStateController>().isObscured,
                       onIconPressed: () =>
-                          context.read<UIStateProvider>().toggleVisibility(),
+                          Get.find<UIStateController>().toggleVisibility(),
                     ),
                   ),
                   const SizedBox(height: 40),
                   //create account button:
-                  authController.isLoading
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: theme.colorScheme.primary,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 50,
-                              vertical: 15,
+                  Obx(
+                    () => authController.isLoading
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.colorScheme.primary,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 50,
+                                vertical: 15,
+                              ),
+                            ),
+                            onPressed: () async {
+                              String? error = await authController
+                                  .signUpWithEmail(
+                                    emailController.text.trim(),
+                                    passwordController.text.trim(),
+                                    fullNameController.text.trim(),
+                                  );
+                              if (error != null) {
+                                HelperMethods.showErrorDialog(error);
+                                Navigator.pop(context);
+                                return;
+                              } else {
+                                // login state already saved by AuthController:
+                                Get.offAllNamed(AppRoutes.authWrapper);
+                              }
+                            },
+                            child: Text(
+                              'createButton'.tr,
+                              style: TextStyle(
+                                fontSize: 22,
+                                color: theme.colorScheme.onPrimary,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          onPressed: () async {
-                            String? error = await authController
-                                .signUpWithEmail(
-                                  emailController.text.trim(),
-                                  passwordController.text.trim(),
-                                  fullNameController.text.trim(),
-                                );
-                            if (error != null) {
-                              // ignore: use_build_context_synchronously
-                              HelperMethodsGetx.showErrorDialog(error);
-                            } else {
-                              // login state already saved by AuthProvider
-                              if (context.mounted) Navigator.pop(context);
-                            }
-                          },
-                          child: Text(
-                            tr.createButton,
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: theme.colorScheme.onPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                  ),
 
                   const Divider(height: 40),
                   SizedBox(
@@ -165,7 +170,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            tr.language,
+                            'language'.tr,
                             style: const TextStyle(fontSize: 18),
                           ),
                           Icon(Icons.language_sharp),

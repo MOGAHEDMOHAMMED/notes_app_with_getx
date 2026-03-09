@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-import 'package:notes_app_with_getx/controllers/ui_state_provider.dart';
+import 'package:notes_app_with_getx/controllers/ui_state_controller.dart';
+import 'package:notes_app_with_getx/views/screens/note_details.dart';
 import 'package:notes_app_with_getx/views/widget/helper_methods.dart';
-import 'package:provider/provider.dart';
 import '../../models/note_model.dart';
-import '../../core/routes/app_routes.dart';
-import '../../core/l10n/app_localizations.dart';
-
 class NotesGridView extends StatelessWidget {
   final List<NoteModel> notes;
   const NotesGridView({super.key, required this.notes});
 
   @override
   Widget build(BuildContext context) {
-    return Selector<UIStateProvider, bool>(
-      selector: (context, UIStateProvider state) => state.isGrid,
-      builder: (context, isGrid, child) => GridView.builder(
+    return Obx(() {
+      bool isGrid = Get.find<UIStateController>().isGrid;
+      return GridView.builder(
         padding: const EdgeInsets.all(10),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: isGrid ? 2 : 1,
@@ -28,8 +26,8 @@ class NotesGridView extends StatelessWidget {
           final note = notes[index];
           return BuildNoteCard(note: note);
         },
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -46,13 +44,10 @@ class BuildNoteCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
         onTap: () {
-          Navigator.pushNamed(
-            context,
-            AppRoutes.noteDetailsScreen,
-            arguments: {'note': note, 'isNewNote': false},
-          );
+        Get.to(NoteDetails(note: note, isNewNote: false));
+         
         },
-        onLongPress: () => HelperMethods.showNoteOptions(context, note),
+        onLongPress: () => HelperMethods.showNoteOptions(note),
 
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -96,7 +91,7 @@ class BuildNoteCard extends StatelessWidget {
                 ),
               ),
               Text(
-                "${AppLocalizations.of(context)!.lastUpdate} :${note.lastUpdate!.year}/${note.lastUpdate!.month}/${note.lastUpdate!.day}",
+                "${'lastUpdate'.tr} :${note.lastUpdate!.year}/${note.lastUpdate!.month}/${note.lastUpdate!.day}",
                 style: const TextStyle(fontSize: 10, color: Colors.grey),
               ),
             ],

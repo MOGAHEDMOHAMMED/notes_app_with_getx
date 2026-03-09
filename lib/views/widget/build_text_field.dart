@@ -9,6 +9,7 @@ class BuildTextField extends StatelessWidget {
   final ThemeData theme;
   final bool isPassword;
   final bool isObscured;
+  final bool isEmail;
   final VoidCallback? onIconPressed;
   const BuildTextField({
     super.key,
@@ -19,6 +20,7 @@ class BuildTextField extends StatelessWidget {
     this.isObscured = false,
     this.isPassword = false,
     this.onIconPressed,
+    this.isEmail = false,
   });
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,11 @@ class BuildTextField extends StatelessWidget {
       controller: controller,
       obscureText: isPassword ? isObscured : false,
       textAlign: TextAlign.center,
+      keyboardType: isEmail
+          ? TextInputType.emailAddress
+          : (isPassword
+                ? TextInputType.visiblePassword
+                : TextInputType.name),
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),

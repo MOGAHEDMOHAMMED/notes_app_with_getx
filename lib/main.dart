@@ -4,63 +4,69 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:notes_app_with_getx/core/l10n/app_translations.dart';
-import 'package:notes_app_with_getx/core/routes/app_routes.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:notes_app_with_getx/auth_wrapper.dart';
+import 'package:notes_app_with_getx/controllers/ui_state_controller.dart';
+import 'package:notes_app_with_getx/core/app_translations.dart';
+import 'package:notes_app_with_getx/core/app_routes.dart';
 import 'package:notes_app_with_getx/views/screens/about_app_screen.dart';
 import 'package:notes_app_with_getx/views/screens/about_developer_screen.dart';
 import 'package:notes_app_with_getx/views/screens/active_notes_screen.dart';
+import 'package:notes_app_with_getx/views/screens/archived_notes_screen.dart';
 import 'package:notes_app_with_getx/views/screens/auth/create_user_screen.dart';
 import 'package:notes_app_with_getx/views/screens/auth/login_screen.dart';
+import 'package:notes_app_with_getx/views/screens/deleted_notes_secreen.dart';
 import 'package:notes_app_with_getx/views/screens/edit_categories_screen.dart';
 import 'package:notes_app_with_getx/views/screens/note_details.dart';
 import 'package:notes_app_with_getx/views/screens/settings_screen.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:notes_app_with_getx/core/l10n/app_localizations.dart';
 import 'firebase_options.dart';
-import 'package:notes_app_with_getx/controllers/auth_provider.dart';
-import 'package:notes_app_with_getx/controllers/ui_state_provider.dart';
-import 'package:notes_app_with_getx/controllers/theme_provider.dart';
-import 'package:notes_app_with_getx/controllers/notes_provider.dart';
+import 'package:notes_app_with_getx/controllers/auth_controller.dart';
+import 'package:notes_app_with_getx/controllers/theme_controller.dart';
+import 'package:notes_app_with_getx/controllers/notes_controller.dart';
 import 'package:notes_app_with_getx/controllers/language_controller.dart';
 import 'package:notes_app_with_getx/views/screens/splash_screen.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  final themeProvider = ThemeProvider();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await themeProvider.loadTheme();
 
   // injecting controllers using GetX:
+  await GetStorage.init();
   Get.put<AuthController>(AuthController(), permanent: true);
   Get.put<NotesController>(NotesController(), permanent: true);
   Get.put<LanguageController>(LanguageController(), permanent: true);
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => UIStateProvider()),
-      ],
-      child: const MyApp(),
-    ),
-  );
-  FlutterNativeSplash.remove();
-}
+  Get.put<ThemeController>(ThemeController(), permanent: true);
+  Get.put<UIStateController>(UIStateController(), permanent: true);
+  final themeProvider = ThemeController();
+  themeProvider.loadTheme();
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
+  runApp(
+    GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       getPages: [
+        GetPage(name: AppRoutes.authWrapper, page: () => const AuthWrapper()),
         GetPage(name: '/', page: () => UserLoginScreen()),
-        GetPage(name: AppRoutes.createUserScreen, page: () => CreateUserScreen()),
-        GetPage(name: AppRoutes.activeNotesScreen, page: () => ActiveNoteScreen()),
+        GetPage(
+          name: AppRoutes.createUserScreen,
+          page: () => CreateUserScreen(),
+        ),
+        GetPage(
+          name: AppRoutes.activeNotesScreen,
+          page: () => ActiveNoteScreen(),
+        ),
+        GetPage(
+          name: AppRoutes.archivedNotesScreen,
+          page: () => ArchivedNotesScreen(),
+        ),
+        GetPage(
+          name: AppRoutes.deletedNotesScreen,
+          page: () => DeletedNotesScreen(),
+        ),
         GetPage(name: AppRoutes.splashScreen, page: () => SplashScreen()),
         GetPage(name: AppRoutes.loginUserScreen, page: () => UserLoginScreen()),
-        GetPage(name: AppRoutes.createUserScreen, page: () => CreateUserScreen()),
+
         GetPage(
           name: AppRoutes.aboutDeveloperScreen,
           page: () => AboutDeveloperScreen(),
@@ -73,20 +79,17 @@ class MyApp extends StatelessWidget {
           page: () => EditCategoriesScreen(),
         ),
       ],
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      // locale: languageProvider.currentLocale,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: Get.find<ThemeController>().themeMode,
+      locale: Get.find<LanguageController>().currentLocale,
       translations: AppTranslations(),
-      locale:Get.find<LanguageController>().savedLocale(),
-      fallbackLocale: Locale('ar'),
-    
-      initialRoute: '/',
-    );
-  }
+      fallbackLocale: Locale('en'),
+      initialRoute: AppRoutes.splashScreen,
+    ),
+  );
+  FlutterNativeSplash.remove();
+
 }
 
 class AppTheme {
@@ -130,6 +133,7 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         textStyle: const TextStyle(
+          inherit: false,
           fontFamily: fontFamily,
           fontSize: 16,
           fontWeight: FontWeight.bold,
@@ -205,6 +209,7 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         textStyle: const TextStyle(
+          inherit: false,
           fontFamily: fontFamily,
           fontSize: 16,
           fontWeight: FontWeight.bold,

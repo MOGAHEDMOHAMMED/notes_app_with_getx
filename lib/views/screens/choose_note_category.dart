@@ -2,10 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../core/l10n/app_localizations.dart';
 import '../../models/category_model.dart';
 import '../../models/note_model.dart';
-import '../../controllers/notes_provider.dart';
+import '../../controllers/notes_controller.dart';
 
 class SelectCategoryScreen extends StatefulWidget {
   final NoteModel note;
@@ -47,7 +46,6 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final tr = AppLocalizations.of(context)!;
 
     return PopScope(
       canPop: true,
@@ -60,7 +58,7 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
         backgroundColor: theme.colorScheme.surface,
         appBar: AppBar(
           title: Text(
-            tr.category,
+            'category'.tr,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -97,7 +95,7 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   title: Text(
-                    tr.noCategory,
+                    'noCategory'.tr,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -121,7 +119,7 @@ class _SelectCategoryScreenState extends State<SelectCategoryScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                tr.availableCategories,
+                'availableCategories'.tr,
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: theme.colorScheme.outline,
                 ),

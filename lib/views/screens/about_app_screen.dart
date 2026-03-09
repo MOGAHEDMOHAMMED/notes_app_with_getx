@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:notes_app_with_getx/core/l10n/app_localizations.dart';
+import 'package:get/get.dart';
 
 class AboutAppScreen extends StatelessWidget {
   const AboutAppScreen({super.key});
@@ -25,7 +25,7 @@ class AboutAppScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
-                AppLocalizations.of(context)!.aboutApp,
+                'aboutApp'.tr,
                 style: TextStyle(
                   color: isDark ? Colors.white : Colors.white,
                   fontWeight: FontWeight.bold,

@@ -5,17 +5,15 @@ import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:get/get.dart';
 
 import 'package:notes_app_with_getx/views/screens/show_category_notes.dart';
-import '../../core/l10n/app_localizations.dart';
-import '../../core/routes/app_routes.dart';
-import '../../controllers/notes_provider.dart';
-import '../../controllers/auth_provider.dart';
+import '../../core/app_routes.dart';
+import '../../controllers/notes_controller.dart';
+import '../../controllers/auth_controller.dart';
 
 class AppDrawer extends StatelessWidget {
   AppDrawer({super.key, required this.currentScreen});
   String currentScreen;
   @override
   Widget build(BuildContext context) {
-    final tr = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final notesController = Get.find<NotesController>();
@@ -30,13 +28,13 @@ class AppDrawer extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildFancyHeader(context, tr.appTitle),
+          _buildFancyHeader(context, 'appTitle'.tr),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               children: [
                 //Show List of categories:
-                _buildSectionTitle(context, tr.category),
+                _buildSectionTitle(context, 'category'.tr),
                 Container(
                   decoration: BoxDecoration(
                     color: isDark
@@ -56,7 +54,7 @@ class AppDrawer extends StatelessWidget {
                           Colors.blue,
                         ),
                         title: Text(
-                          tr.category,
+                          'category'.tr,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
@@ -66,7 +64,7 @@ class AppDrawer extends StatelessWidget {
                         children: [
                           _buildSubTile(
                             context,
-                            title: tr.update,
+                            title: 'update'.tr,
                             icon: Icons.edit_rounded,
                             onTap: () =>
                                 Get.toNamed(AppRoutes.editCategoriesScreen),
@@ -88,13 +86,9 @@ class AppDrawer extends StatelessWidget {
                                 style: const TextStyle(fontSize: 14),
                               ),
                               onTap: () {
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ShowCategoryNotes(categoryModel: cat),
-                                  ),
-                                  (route) => route.isFirst,
+                                // Get.back(); // close drawer
+                                Get.to(
+                                  () => ShowCategoryNotes(categoryModel: cat),
                                 );
                               },
                             ),
@@ -111,14 +105,13 @@ class AppDrawer extends StatelessWidget {
                 if (currentScreen != AppRoutes.archivedNotesScreen) ...[
                   _buildDrawerItem(
                     context,
-                    title: tr.archivedNotesAppBar,
+                    title: 'archivedNotesAppBar'.tr,
                     icon: Icons.archive_rounded,
                     color: Colors.orange,
-                    onTap: () => Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      AppRoutes.archivedNotesScreen,
-                      (route) => route.isFirst,
-                    ),
+                    onTap: () {
+                     Get.back();
+                      Get.toNamed(AppRoutes.archivedNotesScreen);
+                    },
                   ),
                   const SizedBox(height: 10),
                 ],
@@ -126,35 +119,33 @@ class AppDrawer extends StatelessWidget {
                 if (currentScreen != AppRoutes.deletedNotesScreen) ...[
                   _buildDrawerItem(
                     context,
-                    title: tr.deletedNoteAppBar,
+                    title: 'deletedNoteAppBar'.tr,
                     icon: Icons.delete_outline_rounded,
                     color: Colors.redAccent,
-                    onTap: () => Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      AppRoutes.deletedNotesScreen,
-                      (route) => route.isFirst,
-                    ),
+                    onTap: () {
+                      // Get.back(); // close drawer
+                      Get.toNamed(AppRoutes.deletedNotesScreen);
+                    },
                   ),
                   const SizedBox(height: 20),
                 ],
 
                 //app  section(settings, about app, about developer):
-                _buildSectionTitle(context, tr.app),
+                _buildSectionTitle(context, 'app'.tr),
                 //settings Screen:
                 _buildDrawerItem(
                   context,
-                  title: tr.setting,
+                  title: 'setting'.tr,
                   icon: Icons.settings_rounded,
                   color: Colors.teal,
-                  onTap: () =>
-                      Navigator.pushNamed(context, AppRoutes.settingsScreen),
+                  onTap: () => Get.toNamed(AppRoutes.settingsScreen),
                 ),
                 const SizedBox(height: 10),
 
                 //about app screen:
                 _buildDrawerItem(
                   context,
-                  title: tr.aboutApp,
+                  title: 'aboutApp'.tr,
                   icon: Icons.info_outline_rounded,
                   color: Colors.purple,
                   trailing: const Icon(
@@ -162,15 +153,14 @@ class AppDrawer extends StatelessWidget {
                     size: 14,
                     color: Colors.grey,
                   ),
-                  onTap: () =>
-                      Navigator.pushNamed(context, AppRoutes.aboutAppScreen),
+                  onTap: () => Get.toNamed(AppRoutes.aboutAppScreen),
                 ),
                 const SizedBox(height: 10),
 
                 //about developer screen:
                 _buildDrawerItem(
                   context,
-                  title: tr.aboutDeveloper,
+                  title: 'aboutDeveloper'.tr,
                   icon: Icons.code_rounded,
                   color: Colors.purple,
                   trailing: const Icon(
@@ -178,10 +168,7 @@ class AppDrawer extends StatelessWidget {
                     size: 14,
                     color: Colors.grey,
                   ),
-                  onTap: () => Navigator.pushNamed(
-                    context,
-                    AppRoutes.aboutDeveloperScreen,
-                  ),
+                  onTap: () => Get.toNamed(AppRoutes.aboutDeveloperScreen),
                 ),
               ],
             ),
@@ -200,7 +187,7 @@ class AppDrawer extends StatelessWidget {
               children: [
                 _buildDrawerItem(
                   context,
-                  title: tr.logout,
+                  title: 'logout'.tr,
                   icon: Icons.logout_rounded,
                   color: Colors.red,
                   isLogout: true,
@@ -272,7 +259,7 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           Text(
-            "${AppLocalizations.of(context)!.welcomeback}: ${user != null ? (user.displayName != null && user.displayName!.isNotEmpty ? user.displayName : user.email) : 'مستخدم'}",
+            "${'welcomeback'.tr}: ${user != null ? (user.displayName != null && user.displayName!.isNotEmpty ? user.displayName : user.email) : 'مستخدم'}",
             style: const TextStyle(
               color: Color.fromRGBO(255, 255, 255, 0.8),
               fontSize: 14,

@@ -2,20 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../core/l10n/app_localizations.dart';
 import '../../controllers/language_controller.dart';
-import '../../controllers/theme_provider.dart';
+import '../../controllers/theme_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final tr = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
+    ThemeData theme = Theme.of(context);
     final languageController = Get.find<LanguageController>();
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -23,7 +19,7 @@ class SettingsScreen extends StatelessWidget {
         slivers: [
           SliverAppBar.large(
             title: Text(
-              tr.setting,
+              'setting'.tr,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: theme.colorScheme.onSurface,
@@ -54,7 +50,6 @@ class SettingsScreen extends StatelessWidget {
                       child: Column(
                         spacing: 10,
                         children: [
-                          
                           // Build Language ListTile:
                           ListTile(
                             contentPadding: const EdgeInsets.symmetric(
@@ -72,7 +67,7 @@ class SettingsScreen extends StatelessWidget {
                               child: const Icon(Icons.translate_outlined),
                             ),
                             title: Text(
-                              tr.language,
+                              'language'.tr,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -134,10 +129,8 @@ class SettingsScreen extends StatelessWidget {
                           ),
 
                           // Build Theme ListTile:
-                          Selector<ThemeProvider, bool>(
-                            selector: (context, ThemeProvider state) =>
-                                state.isDarkMode,
-                            builder: (context, isDarkMode, child) => ListTile(
+                          Obx(
+                            () => ListTile(
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20,
                                 vertical: 8,
@@ -145,7 +138,7 @@ class SettingsScreen extends StatelessWidget {
                               leading: Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: isDarkMode
+                                  color: Get.find<ThemeController>().isDarkMode
                                       ? Colors.indigo.withOpacity(0.2)
                                       : Colors.orange.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
@@ -170,34 +163,34 @@ class SettingsScreen extends StatelessWidget {
                                         ),
                                       ),
                                   child: Icon(
-                                    isDarkMode
+                                    Get.find<ThemeController>().isDarkMode
                                         ? Icons.dark_mode_rounded
                                         : Icons.wb_sunny_rounded,
                                     key: ValueKey(
-                                      isDarkMode ? 'dark' : 'light',
+                                      Get.find<ThemeController>().isDarkMode
+                                          ? 'dark'
+                                          : 'light',
                                     ),
-                                    color: isDarkMode
+                                    color:
+                                        Get.find<ThemeController>().isDarkMode
                                         ? Colors.indigoAccent
                                         : Colors.orange,
                                   ),
                                 ),
                               ),
                               title: Text(
-                                tr.darkMode,
+                                'darkMode'.tr,
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               trailing: Switch(
-                                value: isDarkMode,
+                                value: Get.find<ThemeController>().isDarkMode,
                                 activeColor: theme.colorScheme.primary,
-                                onChanged: (value) async {
-                                  context.read<ThemeProvider>().toggleTheme(
-                                    isDarkMode,
+                                onChanged: (value) {
+                                  Get.find<ThemeController>().toggleTheme(
+                                    value,
                                   );
-                                  final SharedPreferences prefs =
-                                      await SharedPreferences.getInstance();
-                                  prefs.setBool('isDarkMode', value);
                                 },
                                 thumbIcon:
                                     WidgetStateProperty.resolveWith<Icon?>((
@@ -222,6 +215,14 @@ class SettingsScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      print(
+                        '${languageController.savedLocale().languageCode} \n${Get.find<ThemeController>().isDarkMode}',
+                      );
+                    },
+                    child: Icon(Icons.print),
                   ),
                 ],
               ),

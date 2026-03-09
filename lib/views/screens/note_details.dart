@@ -2,11 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../core/l10n/app_localizations.dart';
 import 'package:notes_app_with_getx/models/category_model.dart';
 import 'package:notes_app_with_getx/views/widget/helper_methods.dart';
 import 'package:notes_app_with_getx/models/note_model.dart';
-import 'package:notes_app_with_getx/controllers/notes_provider.dart';
+import 'package:notes_app_with_getx/controllers/notes_controller.dart';
 
 class NoteDetails extends StatefulWidget {
   final NoteModel? note;
@@ -39,7 +38,6 @@ class _NoteDetailsState extends State<NoteDetails> {
   @override
   Widget build(BuildContext context) {
     final notesController = Get.find<NotesController>();
-    final tr = AppLocalizations.of(context)!;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -48,7 +46,7 @@ class _NoteDetailsState extends State<NoteDetails> {
         final content = contentController.text.trim();
         if (widget.isNewNote) {
           if (title.isEmpty && content.isEmpty) {
-            HelperMethods.showSnackbarWithOutActions(context, tr.ignoreNotes);
+            HelperMethods.showSnackbarWithOutActions( 'ignoreNotes'.tr);
             Navigator.pop(context);
             return;
           } else {
@@ -66,19 +64,19 @@ class _NoteDetailsState extends State<NoteDetails> {
               status: widget.note?.status ?? "active",
               category: cat,
             );
-            HelperMethods.showSnackbarWithOutActions(context, tr.save);
+            HelperMethods.showSnackbarWithOutActions( 'save'.tr);
           }
         } else {
           if (widget.note!.title != title || widget.note!.content != content) {
             notesController.updateNote(widget.note!, title, content);
-            HelperMethods.showSnackbarWithOutActions(context, tr.updateNote);
+            HelperMethods.showSnackbarWithOutActions( 'updateNote'.tr);
           }
         }
-        if (context.mounted) Navigator.pop(context);
+         if(context.mounted)Navigator.pop(context);
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.isNewNote ? tr.newNote : tr.editNote),
+          title: Text(widget.isNewNote ? 'newNote'.tr : 'editNote'.tr),
           actions: [
             IconButton(
               icon: const Icon(Icons.archive_outlined),
@@ -88,20 +86,18 @@ class _NoteDetailsState extends State<NoteDetails> {
                     widget.note!,
                     "active",
                   );
-                  Navigator.pop(context);
+                  Get.back();
                   HelperMethods.showSnackbarWithOutActions(
-                    context,
-                    tr.unArchivedSuccess,
+                    'unArchivedSuccess'.tr,
                   );
                 } else {
                   await notesController.moveNote(
                     widget.note!,
                     "archived",
                   );
-                  Navigator.pop(context);
+                  Get.back();
                   HelperMethods.showSnackbarWithOutActions(
-                    context,
-                    tr.archivedSuccess,
+                    'archivedSuccess'.tr,
                   );
                 }
               },
@@ -115,20 +111,18 @@ class _NoteDetailsState extends State<NoteDetails> {
                   await notesController.deleteForever(
                     widget.note!.id,
                   );
-                  Navigator.pop(context);
+                  Get.back();
                   HelperMethods.showSnackbarWithOutActions(
-                    context,
-                    tr.deleteForeverSuccess,
+                    'deleteForeverSuccess'.tr,
                   );
                 } else {
                   await notesController.moveNote(
                     widget.note!,
                     'deleted',
                   );
-                  Navigator.pop(context);
+                  Get.back();
                   HelperMethods.showSnackbarWithOutActions(
-                    context,
-                    tr.deletedSuccess,
+                    'deletedSuccess'.tr,
                   );
                 }
               },
@@ -149,7 +143,7 @@ class _NoteDetailsState extends State<NoteDetails> {
                 ),
                 maxLines: 1,
                 decoration: InputDecoration(
-                  hintText: tr.titleHint,
+                  hintText: 'titleHint'.tr,
                   border: InputBorder.none,
                   hintStyle: TextStyle(color: Colors.grey.shade400),
                 ),
@@ -163,7 +157,7 @@ class _NoteDetailsState extends State<NoteDetails> {
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
                   decoration: InputDecoration(
-                    hintText: tr.contentHint,
+                    hintText: 'contentHint'.tr,
                     border: InputBorder.none,
                     hintStyle: TextStyle(color: Colors.grey.shade400),
                   ),
@@ -180,7 +174,6 @@ class _NoteDetailsState extends State<NoteDetails> {
                     BottomNavigationBarItem(
                       icon: IconButton(
                         onPressed: () => HelperMethods.showNoteOptions(
-                          context,
                           widget.note!,
                         ),
                         icon: const Icon(Icons.more_vert),

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:notes_app_with_getx/models/note_model.dart';
-import '../../models/category_model.dart';
+import '../models/category_model.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;

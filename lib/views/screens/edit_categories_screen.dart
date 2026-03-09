@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:notes_app_with_getx/models/category_model.dart';
-import '../../core/l10n/app_localizations.dart';
-import '../../controllers/notes_provider.dart';
+import '../../controllers/notes_controller.dart';
 
 class EditCategoriesScreen extends StatelessWidget {
   const EditCategoriesScreen({super.key});
@@ -11,13 +10,12 @@ class EditCategoriesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final notesController = Get.find<NotesController>();
 
-    final tr = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr.editCategoriesTitle),
+        title: Text('editCategoriesTitle'.tr),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Get.back(),
         ),
       ),
       body: Obx(
@@ -28,10 +26,10 @@ class EditCategoriesScreen extends StatelessWidget {
               return ListTile(
                 leading: const Icon(Icons.add),
                 title: Text(
-                  tr.addCategory,
+                  'addCategory'.tr,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                onTap: () => _showCategoryDialog(context),
+                onTap: () => _showCategoryDialog(),
               );
             }
 
@@ -42,11 +40,7 @@ class EditCategoriesScreen extends StatelessWidget {
               title: Text(category.name),
               trailing: IconButton(
                 onPressed: () {
-                  _showCategoryDialog(
-                    context,
-                    isNewCat: false,
-                    oldCategory: category,
-                  );
+                  _showCategoryDialog(isNewCat: false, oldCategory: category);
                 },
                 icon: const Icon(Icons.edit),
               ),
@@ -57,25 +51,19 @@ class EditCategoriesScreen extends StatelessWidget {
     );
   }
 
-  void _showCategoryDialog(
-    BuildContext context, {
-    bool isNewCat = true,
-    CategoryModel? oldCategory,
-  }) {
-    final tr = AppLocalizations.of(context)!;
+  void _showCategoryDialog({bool isNewCat = true, CategoryModel? oldCategory}) {
     final notesController = Get.find<NotesController>();
 
     final controller = isNewCat
         ? TextEditingController()
         : TextEditingController(text: oldCategory?.name);
 
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(isNewCat ? tr.addCategory : tr.updateCategory),
+    Get.dialog(
+      AlertDialog(
+        title: Text(isNewCat ? 'addCategory'.tr : 'updateCategory'.tr),
         content: TextField(
           controller: controller,
-          decoration: InputDecoration(hintText: tr.categoryNameHint),
+          decoration: InputDecoration(hintText: 'categoryNameHint'.tr),
           autofocus: true,
         ),
         actions: [
@@ -83,25 +71,19 @@ class EditCategoriesScreen extends StatelessWidget {
             onPressed: () {
               if (controller.text.isNotEmpty) {
                 if (isNewCat) {
-                  notesController.addCategory(
-                    controller.text.trim(),
-                    '111111',
-                  );
+                  notesController.addCategory(controller.text.trim(), '111111');
                 } else {
                   notesController.updateCategoryName(
                     oldCategory!,
                     controller.text.trim(),
                   );
                 }
-                Navigator.pop(ctx);
+                Get.back();
               }
             },
-            child: Text(isNewCat ? tr.add : tr.confirm),
+            child: Text(isNewCat ? 'add'.tr : 'confirm'.tr),
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(tr.cancel),
-          ),
+          TextButton(onPressed: () => Get.back(), child: Text('cancel'.tr)),
         ],
       ),
     );

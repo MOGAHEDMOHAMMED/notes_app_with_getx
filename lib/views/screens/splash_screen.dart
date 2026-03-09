@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app_with_getx/core/l10n/app_localizations.dart';
+import 'package:get/get.dart';
 import 'package:notes_app_with_getx/auth_wrapper.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -41,9 +41,7 @@ class _SplashScreenState extends State<SplashScreen>
   void _navigateToHome() async {
     await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const AuthWrapper()));
+      Get.offAll(() => const AuthWrapper());
     }
   }
 
@@ -81,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      AppLocalizations.of(context)?.appTitle ?? 'Dwaen',
+                      'appTitle'.tr,
                       style: TextStyle(
                         fontFamily: 'Tahoma',
                         fontSize: 32,
@@ -91,11 +89,11 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      AppLocalizations.of(context)!.slogan,
+                      'slogan'.tr,
                       style: TextStyle(
                         fontFamily: 'Tahoma',
                         fontSize: 14,
-                        color: textColor.withOpacity(0.8),
+                        color: textColor.withValues(alpha: 0.8),
                       ),
                     ),
                   ],

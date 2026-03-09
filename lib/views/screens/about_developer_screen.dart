@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:notes_app_with_getx/core/l10n/app_localizations.dart';
+import 'package:get/get.dart';
 
 class AboutDeveloperScreen extends StatelessWidget {
   const AboutDeveloperScreen({super.key});
@@ -14,7 +14,7 @@ class AboutDeveloperScreen extends StatelessWidget {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)!.aboutDeveloper, 
+          'aboutDeveloper'.tr,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -62,7 +62,7 @@ class AboutDeveloperScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                AppLocalizations.of(context)!.jobTitle,
+                'jobTitle'.tr,
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w500,
@@ -73,18 +73,18 @@ class AboutDeveloperScreen extends StatelessWidget {
               // 3. Bio / About Me Card
               _buildInfoCard(
                 theme: theme,
-                title: AppLocalizations.of(context)!.aboutMeTitle,
+                title: 'aboutMeTitle'.tr,
                 icon: Icons.info_outline_rounded,
-                content: AppLocalizations.of(context)!.aboutMeContent,
+                content: 'aboutMeContent'.tr,
               ),
               const SizedBox(height: 16),
 
               // 4. Contact Information Card
-              _buildContactCard(theme, AppLocalizations.of(context)!),
+              _buildContactCard(theme),
               const SizedBox(height: 16),
 
               // 5. Skills Section
-              _buildSkillsSection(theme, AppLocalizations.of(context)!),
+              _buildSkillsSection(theme),
               const SizedBox(height: 30),
             ],
           ),
@@ -133,7 +133,7 @@ class AboutDeveloperScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContactCard(ThemeData theme, AppLocalizations tr) {
+  Widget _buildContactCard(ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -147,7 +147,7 @@ class AboutDeveloperScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            tr.contactInfoTitle,
+            'contactInfoTitle'.tr,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -156,23 +156,23 @@ class AboutDeveloperScreen extends StatelessWidget {
           _buildContactRow(
             theme,
             Icons.email_outlined,
-            tr.emailLabel,
+            'emailLabel'.tr,
             "mogahed@example.com",
           ),
           const SizedBox(height: 16),
           _buildContactRow(
             theme,
             Icons.phone_outlined,
-            tr.phoneLabel,
+            'phoneLabel'.tr,
             "+967 713 540 851",
-           isPhone:  true,
+            isPhone: true,
           ),
           const SizedBox(height: 16),
           _buildContactRow(
             theme,
             Icons.location_on_outlined,
-            tr.locationLabel,
-            tr.locationValue,
+            'locationLabel'.tr,
+            'locationValue'.tr,
           ),
           const SizedBox(height: 16),
           _buildContactRow(
@@ -236,7 +236,7 @@ class AboutDeveloperScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSkillsSection(ThemeData theme, AppLocalizations tr) {
+  Widget _buildSkillsSection(ThemeData theme) {
     // I added your actual interests here!
     final skills = [
       "Flutter",
@@ -263,7 +263,7 @@ class AboutDeveloperScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            tr.skillsInterestsTitle,
+            'skillsInterestsTitle'.tr,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/instance_manager.dart';
-import 'package:notes_app_with_getx/controllers/auth_provider.dart';
+import 'package:get/get.dart';
+import 'package:notes_app_with_getx/controllers/auth_controller.dart';
 import 'package:notes_app_with_getx/views/screens/active_notes_screen.dart';
 import 'package:notes_app_with_getx/views/screens/auth/login_screen.dart';
 
@@ -10,6 +10,8 @@ class AuthWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authController = Get.find<AuthController>();
-    return authController.isLoggedIn ? ActiveNoteScreen() : UserLoginScreen();
+    return Obx(
+      () => authController.isLoggedIn ? ActiveNoteScreen() : UserLoginScreen(),
+    );
   }
 }
