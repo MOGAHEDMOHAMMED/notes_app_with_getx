@@ -5,7 +5,7 @@ Dawin is a fast, responsive, and intuitive note-taking application built with Fl
 
 **Learning Context:** This project is a direct extension and complete refactor of the original Dawin app. The primary goal of this repository is to practically apply and master the **GetX** ecosystem. It transitions from traditional state management (Provider) and native routing to GetX's powerful reactive state management (`Rx`, `Obx`), dependency injection (`Bindings`), and simplified route management.
 
-🔗 **[Original Dawin App (Provider Version) - Click Here]((https://github.com/MOGAHEDMOHAMMED/notes_app))**
+🔗 **[Original Dawin App (Provider Version) - Click Here](https://github.com/MOGAHEDMOHAMMED/notes_app)**
 
 ---
 ## Some Screens:
